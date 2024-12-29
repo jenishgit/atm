@@ -15,4 +15,8 @@ data class User(
             println("Owed $${amount} from ${user.name}")
         }
     }
+
+    fun greet() {
+        println("Hello, $name!")
+    }
 }
