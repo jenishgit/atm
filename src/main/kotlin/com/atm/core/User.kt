@@ -19,4 +19,8 @@ data class User(
     fun greet() {
         println("Hello, $name!")
     }
+
+    fun goodBye() {
+        println("Goodbye, $name!")
+    }
 }

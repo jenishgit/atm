@@ -2,6 +2,7 @@ package org.example.com.atm.core
 
 class AccountService {
     companion object {
+        var loggedInUser: User? = null;
         private val users = mutableMapOf<String, User>()
 
         fun createUserIfNotExisting(name: String) : User {
@@ -12,6 +13,14 @@ class AccountService {
                 return newUser
             }
             return user
+        }
+
+        fun login(user: User) {
+            loggedInUser = user
+        }
+
+        fun logout() {
+            loggedInUser = null
         }
 
         private fun getUser(name: String): User? {
