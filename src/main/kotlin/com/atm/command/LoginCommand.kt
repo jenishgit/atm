@@ -9,6 +9,7 @@ class LoginCommand : ICommand {
         }
         val name = input[0];
         val user = AccountService.createUserIfNotExisting(name)
+        AccountService.login(user)
         user.greet()
         user.printStats()
     }

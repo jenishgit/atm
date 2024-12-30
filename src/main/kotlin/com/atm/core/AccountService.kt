@@ -5,6 +5,13 @@ class AccountService {
         var loggedInUser: User? = null;
         private val users = mutableMapOf<String, User>()
 
+        fun deposit(amount: Int) {
+            if (loggedInUser == null) {
+                throw Exception("No user logged in")
+            }
+            loggedInUser!!.deposit(amount)
+        }
+
         fun createUserIfNotExisting(name: String) : User {
             val user = getUser(name);
             if (user == null) {
@@ -23,7 +30,7 @@ class AccountService {
             loggedInUser = null
         }
 
-        private fun getUser(name: String): User? {
+        fun getUser(name: String): User? {
             if (users.containsKey(name)) {
                 return users[name]
             }
