@@ -20,7 +20,7 @@ class UserTest {
     @Test
     fun `greet should print greeting message`() {
         // Create user
-        val user = User("Jenish", 0);
+        val user = User("Jenish", 0)
 
         val outputStream = ByteArrayOutputStream()
         System.setOut(PrintStream(outputStream))
@@ -35,7 +35,7 @@ class UserTest {
     @Test
     fun `goodBye should print goodbye message`() {
         // Create user
-        val user = User("Jenish", 0);
+        val user = User("Jenish", 0)
 
         val outputStream = ByteArrayOutputStream()
         System.setOut(PrintStream(outputStream))
@@ -54,8 +54,8 @@ class UserTest {
         val user2 = User("Alice", 200)
 
         // Setup owed lists
-        val owedFrom = listOf(Pair(user2, 100))
-        val owedTo = listOf(Pair(user1, 150))
+        val owedFrom = mutableListOf(Pair(user2, 100))
+        val owedTo = mutableListOf(Pair(user1, 150))
 
         // Update user1's owedFrom and owedTo
         val userWithOwedAmounts = user1.copy(owedFrom = owedFrom, owedTo = owedTo)
