@@ -148,6 +148,13 @@ class UserTest {
 
     @Nested
     inner class Deposit {
+        @BeforeEach
+        fun setup() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+            bob.balance = 0
+            alice.balance = 0
+        }
         @Test
         fun `Should throw exception for negative amount`() {
             val alice = AccountService.getUser("Alice")!!
