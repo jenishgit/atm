@@ -2,7 +2,6 @@ package com.atm.command
 
 import org.example.com.atm.command.TransferCommand
 import org.example.com.atm.core.AccountService
-import org.example.com.atm.core.User
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -16,7 +15,7 @@ class TransferCommandTest {
         // Reset the AccountService before each test
         AccountService.createUserIfNotExisting("Alice")
         AccountService.createUserIfNotExisting("Bob")
-        AccountService.loggedInUser = AccountService.getUser("Alice");
+        AccountService.loggedInUser = AccountService.getUser("Alice")
     }
 
     @AfterEach

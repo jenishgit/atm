@@ -1,12 +1,24 @@
 package com.atm.core
 
+import org.example.com.atm.core.AccountService
 import org.example.com.atm.core.User
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class UserTest {
+
+    @BeforeEach
+    fun setup() {
+        // Reset the AccountService before each test
+        AccountService.createUserIfNotExisting("Alice")
+        AccountService.createUserIfNotExisting("Bob")
+        AccountService.loggedInUser = AccountService.getUser("Alice")
+    }
+
     @Test
     fun `User should be correctly initialized`() {
         val user = User("John", 1000)
@@ -100,4 +112,125 @@ class UserTest {
         System.setOut(System.out)
     }
 
+    @Nested
+    inner class Withdraw {
+        @Test
+        fun `Should decrease balance`() {
+            val alice = AccountService.getUser("Alice")!!
+            alice.balance = 200
+            alice.withdraw(150)
+
+            assertEquals(50, alice.balance)
+        }
+
+        @Test
+        fun `Should throw exception if amount exceeds balance`() {
+            val alice = AccountService.getUser("Alice")!!
+            alice.balance = 200
+            val exception = assertThrows(Exception::class.java) {
+                alice.withdraw(1200)
+            }
+
+            assertEquals("Insufficient funds", exception.message)
+        }
+
+        @Test
+        fun `Should throw exception for negative amount`() {
+            val alice = AccountService.getUser("Alice")!!
+            alice.balance = 200
+            val exception = assertThrows(Exception::class.java) {
+                alice.withdraw(-100)
+            }
+
+            assertEquals("Amount must be positive", exception.message)
+        }
+    }
+
+    @Nested
+    inner class Deposit {
+        @Test
+        fun `Should throw exception for negative amount`() {
+            val alice = AccountService.getUser("Alice")!!
+            alice.balance = 200
+            val exception = assertThrows(Exception::class.java) {
+                alice.deposit(-100)
+            }
+
+            assertEquals("Amount must be positive", exception.message)
+        }
+
+        @Test
+        fun `Should increase balance`() {
+            val alice = AccountService.getUser("Alice")!!
+            alice.balance = 200
+            alice.deposit(150)
+
+            assertEquals(350, alice.balance)
+        }
+
+        @Test
+        fun `deposit should increase balance and handle debts`() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+            alice.owedTo.add(Pair(bob, 100))
+            bob.owedFrom.add(Pair(alice, 100))
+
+
+            alice.deposit(200)
+
+            assertEquals(100, alice.balance)
+            assertEquals(100, bob.balance)
+            assertEquals(mutableListOf<Pair<User, Int>>(), alice.owedTo)
+            assertEquals(mutableListOf<Pair<User, Int>>(), bob.owedFrom)
+        }
+    }
+
+    @Nested
+    inner class Transfer {
+
+        @BeforeEach
+        fun setup() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+            alice.balance = 110
+            bob.balance = 35
+        }
+
+        @Test
+        fun `transfer should throw exception for negative amount`() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+            val exception = assertThrows(Exception::class.java) {
+                alice.transfer(bob, -100)
+            }
+
+            assertEquals("Amount must be positive", exception.message)
+        }
+
+        @Test
+        fun `transfer should reduce balance and increase recipient balance`() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+
+            AccountService.loggedInUser = alice
+            alice.transfer(bob, 50)
+
+            assertEquals(60, alice.balance)
+            assertEquals(85, bob.balance)
+        }
+
+        @Test
+        fun `transfer should handle partial payment of debts`() {
+            val alice = AccountService.getUser("Alice")!!
+            val bob = AccountService.getUser("Bob")!!
+            bob.balance = 0
+            bob.owedTo.add(Pair(alice, 20))
+            alice.owedFrom.add(Pair(bob, 20))
+            alice.transfer(bob, 25)
+
+            assertEquals(5, bob.balance)
+            assertEquals(mutableListOf<Pair<User, Int>>(), alice.owedFrom)
+            assertEquals(mutableListOf<Pair<User, Int>>(), bob.owedTo)
+        }
+    }
 }
