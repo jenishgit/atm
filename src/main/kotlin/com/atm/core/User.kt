@@ -39,10 +39,12 @@ data class User(
                 to.owedFrom[to.owedFrom.indexOfFirst { it.first == from }] = Pair(from, pair.second - amount)
                 to.deposit(amount)
                 from.withdraw(amount)
+                println("Transferred $amount to ${to.name}")
                 return
             } else {
                 from.owedTo.remove(pair)
                 to.owedFrom.remove(Pair(from, pair.second))
+                println("Transferred ${pair.second} to ${to.name}")
                 to.deposit(pair.second)
                 from.withdraw(pair.second)
                 amount -= pair.second
@@ -50,10 +52,12 @@ data class User(
             }
         }
         if (from.balance >= amount) {
+            println("Transferred $amount to ${to.name}")
             from.withdraw(amount)
             to.deposit(amount)
         } else {
             val loanAmount = amount - from.balance
+            println("Transferred ${from.balance} to ${to.name}")
             to.deposit(from.balance)
             from.withdraw(from.balance)
             to.owedFrom.add(Pair(from, loanAmount))
@@ -75,7 +79,7 @@ data class User(
         if (value < 0) {
             throw Exception(AMOUNT_MUST_BE_POSITIVE)
         }
-        var amount = value;
+        var amount = value
         balance += amount
         if (owedTo.isNotEmpty()) {
             owedTo.stream().toList().forEach { (user, owedAmount) ->
@@ -93,6 +97,6 @@ data class User(
     }
 
     override fun toString(): String {
-        return name.toString()
+        return name
     }
 }
